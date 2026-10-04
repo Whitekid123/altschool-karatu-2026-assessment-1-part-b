@@ -1,35 +1,25 @@
-// Problem 3: freeze an object and its nested objects, then return that object.
+// Problem 3: freeze an object and its nested objects.
 function deepFreeze(obj) {
-  const visited = new WeakSet();
-
-  function freezeNested(value) {
-    if (value === null || typeof value !== "object" || visited.has(value)) {
-      return value;
-    }
-
-    // Mark first so a circular reference cannot cause endless recursion.
-    visited.add(value);
-    for (const nestedValue of Object.values(value)) {
-      freezeNested(nestedValue);
-    }
-
-    return Object.freeze(value);
+  if (obj === null || typeof obj !== "object") {
+    return obj;
   }
 
-  return freezeNested(obj);
+  // Freeze each nested object before freezing the main object.
+  for (const value of Object.values(obj)) {
+    deepFreeze(value);
+  }
+
+  return Object.freeze(obj);
 }
 
-if (require.main === module) {
-  const config = deepFreeze({
-    api: { baseUrl: "https://x.com", retries: 3 },
-    debug: false,
-  });
-  // These assignments are ignored in non-strict mode.
-  // Strict mode would throw TypeError instead.
-  config.api.baseUrl = "https://changed.com";
-  config.debug = true;
-  console.log(config.api.baseUrl, config.debug); // https://x.com false
-  console.log(Object.isFrozen(config.api)); // true
-}
+const config = deepFreeze({
+  api: { baseUrl: "https://x.com", retries: 3 },
+  debug: false,
+});
 
-module.exports = deepFreeze;
+// These changes are ignored when this file runs without strict mode.
+config.api.baseUrl = "https://changed.com";
+config.debug = true;
+
+console.log(config.api.baseUrl, config.debug); // https://x.com false
+console.log(Object.isFrozen(config.api)); // true

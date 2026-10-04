@@ -1,4 +1,4 @@
-// Problem 4: keep count private in a closure and expose its value through a getter.
+// Problem 4: keep the count private inside the function.
 function createCounter() {
   let count = 0;
 
@@ -15,13 +15,10 @@ function createCounter() {
   };
 }
 
-if (require.main === module) {
-  const counter = createCounter();
-  counter.increment();
-  counter.increment();
-  counter.decrement();
-  console.log(counter.value); // 1
-  console.log(counter.count); // undefined
-}
+const counter = createCounter();
+counter.increment();
+counter.increment();
+counter.decrement();
 
-module.exports = createCounter;
+console.log(counter.value); // 1
+console.log(counter.count); // undefined
